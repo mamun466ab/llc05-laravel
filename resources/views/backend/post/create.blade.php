@@ -1,9 +1,9 @@
 @extends('master')
 
 @section('content')
-    <h2>Add Category</h2>
+    <h2>Add Post</h2>
 
-    <form action="{{ route('categories.store') }}" method="post">
+    <form action="{{ route('posts.store') }}" method="post">
         @csrf
 
         @if ($errors->any())
@@ -27,8 +27,22 @@
         @endif
 
         <div class="form-group">
-            <label for="name">Category Name</label>
-            <input type="text" class="form-control" name="name" value="{{ old('name') }}" placeholder="Enter category name">
+            <label for="name">Post Title</label>
+            <input type="text" class="form-control" name="title" placeholder="Enter post title">
+        </div>
+
+        <div class="form-group">
+            <label for="content">Post Content</label>
+            <textarea class="form-control" name="content"></textarea>
+        </div>
+
+        <div class="form-group">
+            <label for="status">Category</label>
+            <select name="category_id" class="form-control">
+                @foreach($categories as $category)
+                    <option value="{{ $category->id }}">{{ $category->name }}</option>
+                @endforeach
+            </select>
         </div>
 
         <div class="form-group">
@@ -39,14 +53,14 @@
             </select>
         </div>
 
-        <button type="submit" class="btn btn-primary btn-block">Add Category</button>
+        <button type="submit" class="btn btn-primary btn-block">Add Post</button>
     </form>
 
     <hr>
 
     <p>
-        <a href="{{ route('categories.index') }}" class="btn btn-primary btn-block">
-            Back to Category List
+        <a href="{{ route('posts.index') }}" class="btn btn-primary btn-block">
+            Back to Post List
         </a>
     </p>
 @endsection

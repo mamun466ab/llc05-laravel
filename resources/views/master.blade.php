@@ -19,7 +19,7 @@
 <div class="container">
     @include('partials.navbar')
 
-    @includeWhen(request()->is('/'), 'partials.jumbotron')
+    {{--@includeWhen(request()->is('/'), 'partials.jumbotron')--}}
 
     <main role="main" class="container">
         <div class="row">

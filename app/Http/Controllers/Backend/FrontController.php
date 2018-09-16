@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Backend;
 
 use App\Http\Controllers\Controller;
+use App\Models\Post;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -25,6 +26,12 @@ class FrontController extends Controller
             'Youtube' => 'https://youtube.com',
             'LinkedIn' => 'https://linkedin.com',
         ];
+
+        $data['articles'] = cache('articles', function () {
+            return Post::with('user', 'category')->orderBy('created_at', 'desc')->take(100)->get();
+        });
+
+        //$data['articles'] = Post::with('user', 'category')->orderBy('created_at', 'desc')->take(100)->get();
 
         return view('index', $data);
     }
