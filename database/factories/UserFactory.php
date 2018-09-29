@@ -9,5 +9,8 @@ $factory->define(\App\Models\User::class, function (Faker $faker) {
         'password' => bcrypt('123456'),
         'photo' => $faker->imageUrl(),
         'remember_token' => str_random(10),
+        'email_verified' => 1,
+        'email_verified_at' => \Carbon\Carbon::now(),
+        'email_verification_token' => '',
     ];
 });

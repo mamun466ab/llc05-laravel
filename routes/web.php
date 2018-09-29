@@ -23,6 +23,8 @@ Route::post('/login', 'Backend\FrontController@processLogin');
 Route::get('/register', 'Backend\FrontController@showRegistrationForm')->name('register');
 Route::post('/register', 'Backend\FrontController@processRegistration');
 
+Route::get('/verify/{token}', 'Backend\FrontController@verifyEmail')->name('verify');
+
 Route::get('/post', 'Backend\FrontController@post');
 
 Route::get('/logout', 'Backend\FrontController@logout')->name('logout');

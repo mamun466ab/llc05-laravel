@@ -3,9 +3,12 @@
 namespace App\Http\Controllers\Backend;
 
 use App\Http\Controllers\Controller;
+use App\Mail\VerificationEmail;
 use App\Models\Post;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 
 class FrontController extends Controller
@@ -125,17 +128,15 @@ class FrontController extends Controller
             $photo->storeAs('images', $file_name);
         }
 
-        //$user = new User();
-        //$user->email = trim($request->input('email'));
-        //$user->password = bcrypt($request->input('password'));
-        //$user->photo = $file_name;
-        //$user->save();
-        User::create([
+        $user = User::create([
             'email' => strtolower(trim($request->input('email'))),
             'username' => strtolower(trim($request->input('username'))),
             'password' => bcrypt($request->input('password')),
             'photo' => $file_name,
+            'email_verification_token' => str_random(32),
         ]);
+
+        Mail::to($user->email)->queue(new VerificationEmail($user));
 
         session()->flash('type', 'success');
         session()->flash('message', 'Registration successful');
@@ -174,6 +175,16 @@ class FrontController extends Controller
         $credentials = $request->except('_token');
 
         if (auth()->attempt($credentials)) {
+            $user = auth()->user();
+
+            if ($user->email_verified === 0) {
+                session()->flash('type', 'danger');
+                session()->flash('message', 'Your account is not activated. Please verify your email');
+                auth()->logout();
+
+                return redirect()->route('login');
+            }
+
             return redirect()->route('dashboard');
         }
 
@@ -205,6 +216,36 @@ class FrontController extends Controller
 
         session()->flash('type', 'success');
         session()->flash('message', 'You have been logged out');
+
+        return redirect()->route('login');
+    }
+
+    public function verifyEmail($token = null)
+    {
+        if ($token === null) {
+            session()->flash('type', 'warning');
+            session()->flash('message', 'Invalid token');
+
+            return redirect()->route('login');
+        }
+
+        $user = User::where('email_verification_token', $token)->first();
+
+        if ($user === null) {
+            session()->flash('type', 'warning');
+            session()->flash('message', 'Invalid token');
+
+            return redirect()->route('login');
+        }
+
+        $user->update([
+            'email_verified' => 1,
+            'email_verified_at' => Carbon::now(),
+            'email_verification_token' => '',
+        ]);
+
+        session()->flash('type', 'success');
+        session()->flash('message', 'Your account is activated. You can login now');
 
         return redirect()->route('login');
     }
