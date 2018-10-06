@@ -3,12 +3,12 @@
 namespace App\Http\Controllers\Backend;
 
 use App\Http\Controllers\Controller;
-use App\Mail\VerificationEmail;
 use App\Models\Post;
 use App\Models\User;
+use App\Notifications\NotifyAdmin;
+use App\Notifications\VerifyEmail;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 
 class FrontController extends Controller
@@ -130,13 +130,18 @@ class FrontController extends Controller
 
         $user = User::create([
             'email' => strtolower(trim($request->input('email'))),
+            'phone_number' => trim($request->input('phone_number')),
             'username' => strtolower(trim($request->input('username'))),
             'password' => bcrypt($request->input('password')),
             'photo' => $file_name,
             'email_verification_token' => str_random(32),
         ]);
 
-        Mail::to($user->email)->queue(new VerificationEmail($user));
+        //Mail::to($user->email)->queue(new VerificationEmail($user));
+        $user->notify(new VerifyEmail($user));
+
+        $admin = User::find(51);
+        $admin->notify(new NotifyAdmin($user));
 
         session()->flash('type', 'success');
         session()->flash('message', 'Registration successful');

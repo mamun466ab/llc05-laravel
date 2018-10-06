@@ -32,6 +32,11 @@
         </div>
 
         <div class="form-group">
+            <label for="exampleInputPhone1">Phone Number</label>
+            <input type="text" class="form-control" name="phone_number" value="{{ old('phone_number') }}" placeholder="Enter phone">
+        </div>
+
+        <div class="form-group">
             <label for="exampleInputUsername1">Username</label>
             <input type="text" class="form-control" name="username" value="{{ old('username') }}" placeholder="Enter username">
         </div>

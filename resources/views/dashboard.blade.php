@@ -3,6 +3,18 @@
 @section('content')
     <div class="well">
         <h4>Logged in successfully as {{ optional($user)->email }}</h4>
+
+        @if($user->id === 51)
+            <div class="well">
+                <ul>
+                    @foreach ($user->unreadNotifications as $notification)
+                        <li>{{ $notification->data['username'] }} just registered</li>
+                        @php $notification->markAsRead(); @endphp
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+
         <p>
             <img src="{{ url('uploads/images', optional($user)->photo) }}" class="img-thumbnail" width="250">
         </p>
