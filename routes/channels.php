@@ -11,6 +11,6 @@
 |
 */
 
-Broadcast::channel('App.User.{id}', function ($user, $id) {
-    return (int) $user->id === (int) $id;
+Broadcast::channel('post.created', function ($post) {
+    return (int) auth()->user()->id !== (int) $post->user_id;
 });
