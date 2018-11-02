@@ -181,6 +181,8 @@ class FrontController extends Controller
 
         if (auth()->attempt($credentials)) {
             $user = auth()->user();
+            $user->last_login = Carbon::now();
+            $user->save();
 
             if ($user->email_verified === 0) {
                 session()->flash('type', 'danger');
